@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QTcpServer>
 #include <QTcpSocket>
 
 // IPC app1 (server) --- HMI (client)
@@ -17,16 +18,19 @@ public:
     InterProcessCom(QObject *parent = nullptr);
 
 public:
+    void serverRespone();
     bool reStart;
     bool getReStart();
 private slots:
+
     void readMessage();
-    void connectToBssHmi();
+
 private:
     QTimer heartbeatsend;
     void initServer();
     QString ipAddress;
-    QTcpSocket *socket = nullptr;
+    QTcpServer *server;
+    QTcpSocket *socket;
 
 
 };

@@ -2,10 +2,26 @@
 
 InterProcessCom::InterProcessCom(QObject *parent) : QObject(parent)
 {
-    socket = new QTcpSocket();
-    connect(socket, &QIODevice::readyRead,this,&InterProcessCom::readMessage);
-    connect(&heartbeatsend,&QTimer::timeout,this,&InterProcessCom::connectToBssHmi);
-    heartbeatsend.start(5000);
+    server = new QTcpServer(this);
+    //socket = new QTcpSocket(this);
+    connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+    if (!this->server->listen(QHostAddress::AnyIPv4,TCP_SERVER_PORT_WRITE))
+    {
+        qDebug() << tr("Unable to start the server: %1.").arg(server->errorString()) ;
+        return;
+    }
+    qDebug() << "  port is " << server->serverPort();
+    connect(server,&QTcpServer::newConnection, this, &InterProcessCom::serverRespone);
+//    connect(&heartbeatSend,&QTimer::timeout, this, &connectMonitor::sendMessage);
+//    heartbeatSend.start(1000)
+}
+
+void InterProcessCom::serverRespone()
+{
+    socket = server->nextPendingConnection();
+    socket->waitForReadyRead();
+    qDebug()<<socket->readAll();
+    socket->write("server respone");
 }
 
 bool InterProcessCom::getReStart()
@@ -18,22 +34,7 @@ void InterProcessCom::readMessage()
     socket->waitForReadyRead(2000);
     qDebug() << "Bytes available : " << socket->bytesAvailable();
     qDebug() << "Du lieu nhan duoc tu bss-hmi la : " << socket->readAll();
-//  serverRead->close();
+//    socket->close();
 }
 
-void InterProcessCom::connectToBssHmi()
-{
-    socket->abort();
-    socket->connectToHost("localhost",TCP_SERVER_PORT_READ);
-    qDebug() <<socket->openMode();
-    if(socket->waitForConnected(1000))
-    {
-        qDebug() << "bss-hmi connected "  ;
-        reStart = false;
-    }
-    else
-    {
-        qDebug() << "Reconnect" ;
-        reStart = true;
-    }
-}
+

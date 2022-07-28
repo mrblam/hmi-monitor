@@ -11,6 +11,7 @@ Monitor::Monitor(InterProcessCom *p_ipc,QObject *parent) : QObject(parent)
 
 void Monitor::Scan()
 {
+    return;
     qDebug() << "show" << CurrentVersion->state();
     this->isStart = IPC->getReStart();
     qDebug() << this->isStart;
