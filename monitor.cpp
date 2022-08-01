@@ -11,13 +11,13 @@ Monitor::Monitor(InterProcessCom *p_ipc,QObject *parent) : QObject(parent)
 
 void Monitor::Scan()
 {
-    return;
+//    return;
     qDebug() << "show" << CurrentVersion->state();
     this->isStart = IPC->getReStart();
     qDebug() << this->isStart;
     if(CurrentVersion->state() == 0 || this->isStart == true){
         this->openCurrentVersion();
-
+        this->isStart = false;
         qDebug() <<  "restart bss-hmi "  ;
         return;
     }
@@ -26,7 +26,8 @@ void Monitor::Scan()
 
 void Monitor::openCurrentVersion()
 {
-    QString currentProgram = "/home/hoanpx/Desktop/build-bss-hmi-Desktop-Release/bss-hmi";
+    QString currentProgram = "/home/hoanpx/bss/bss-hmi/build-bss-hmi-Desktop-Release/bss-hmi";
+    CurrentVersion->close();
     CurrentVersion->start(currentProgram);
     qDebug() << "show" << CurrentVersion->state();
 }

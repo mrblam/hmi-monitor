@@ -10,7 +10,11 @@
 #define TCP_SERVER_PORT_WRITE 12345
 // IPC app1 (client) --- HMI (server)
 #define TCP_SERVER_PORT_READ  54321
-
+#define SOM ':'
+#define EOM '*'
+#define FIELD_DELIMITER ','
+#define UI_CHANGE        'UI'
+#define HEART_BEAT       'HB'
 class InterProcessCom : public QObject
 {
     Q_OBJECT
@@ -21,11 +25,22 @@ public:
     void serverRespone();
     bool reStart;
     bool getReStart();
-private slots:
-
-    void readMessage();
+    void checkRequest();
+    QByteArray system;
+    QByteArray ui;
+    QByteArray state;
+public slots:
+    void checkSys();
 
 private:
+    int disconnectEvent;
+    int countSubCmd;
+    QString sSystem;
+    QString sUi;
+    QString sState;
+    QTimer heartbeatSys;
+    QTimer heartbeatUi;
+    QByteArray buffer;
     QTimer heartbeatsend;
     void initServer();
     QString ipAddress;
