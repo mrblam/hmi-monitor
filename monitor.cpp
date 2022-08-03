@@ -17,7 +17,7 @@ void Monitor::Scan()
     qDebug() << this->isStart;
     if(CurrentVersion->state() == 0 || this->isStart == true){
         this->openCurrentVersion();
-        this->isStart = false;
+        IPC->offReStart();
         qDebug() <<  "restart bss-hmi "  ;
         return;
     }

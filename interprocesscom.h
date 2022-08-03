@@ -25,12 +25,14 @@ public:
     void serverRespone();
     bool reStart;
     bool getReStart();
+    void offReStart();
     void checkRequest();
     QByteArray system;
     QByteArray ui;
     QByteArray state;
 public slots:
     void checkSys();
+    void resetUi();
 
 private:
     int disconnectEvent;
@@ -39,7 +41,7 @@ private:
     QString sUi;
     QString sState;
     QTimer heartbeatSys;
-    QTimer heartbeatUi;
+    QTimer monitorUi;
     QByteArray buffer;
     QTimer heartbeatsend;
     void initServer();

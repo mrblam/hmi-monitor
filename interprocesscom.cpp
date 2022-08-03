@@ -12,6 +12,7 @@ InterProcessCom::InterProcessCom(QObject *parent) : QObject(parent)
     }
     qDebug() << "  port is " << server->serverPort();
     connect(server,&QTcpServer::newConnection, this, &InterProcessCom::serverRespone);
+    connect(&monitorUi,&QTimer::timeout, this, &InterProcessCom::resetUi);
     connect(&heartbeatSys,&QTimer::timeout, this, &InterProcessCom::checkSys);
     heartbeatSys.start(1000);
 }
@@ -33,6 +34,12 @@ bool InterProcessCom::getReStart()
     return reStart;
 }
 
+void InterProcessCom::offReStart()
+{
+    reStart = false;
+
+}
+
 void InterProcessCom::checkRequest()
 {
     int32_t start  = buffer.indexOf(SOM);
@@ -45,9 +52,15 @@ void InterProcessCom::checkRequest()
     QList<QByteArray> fields=pack.split(FIELD_DELIMITER);
     system =fields.at(0);
     ui = fields.at(1);
+    qDebug()<< ui;
     state = fields.at(2);
     sSystem = system;
     sUi = ui;
+    if(sUi == 'L' )
+    {
+        monitorUi.start(10000);
+        qDebug()<<"chuyen giao dien";
+    }
     sState = state;
 
 }
@@ -56,8 +69,12 @@ void InterProcessCom::checkSys()
 {
     disconnectEvent ++;
     qDebug()<< "connectEvent" <<disconnectEvent;
-    qDebug()<<sSystem << sUi<< sState<< countSubCmd;
-
+//    qDebug()<<sSystem << sUi<< sState<< countSubCmd;
+    if(disconnectEvent >20)
+    {
+        reStart = true;
+        disconnectEvent = 0;
+    }
 #if 0
     if(sUi == 'D') // trang thai mac dinh
     {
@@ -70,7 +87,7 @@ void InterProcessCom::checkSys()
 #endif
 
 
-#if 1
+#if 0 //3/8
     if(sState == 'O') // dem thoi gian ui nao day open
     {
         countSubCmd++;
@@ -81,7 +98,7 @@ void InterProcessCom::checkSys()
         sState = "";
         countSubCmd = 0;
     }
-    if(countSubCmd > 20 )//|| disconnectEvent > 10
+    if(countSubCmd > 70 )//|| disconnectEvent > 10
     {
         countSubCmd = 0;
         sState = "";
@@ -96,6 +113,12 @@ void InterProcessCom::checkSys()
         reStart = false;
     }
 #endif
+}
+
+void InterProcessCom::resetUi()
+{
+    reStart = true;
+    monitorUi.stop();
 }
 
 
