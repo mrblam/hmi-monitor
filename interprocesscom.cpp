@@ -58,10 +58,16 @@ void InterProcessCom::checkRequest()
     sUi = ui;
     if(sUi == 'L' )
     {
-        monitorUi.start(10000);
+        monitorUi.start(70000);
         qDebug()<<"chuyen giao dien";
     }
+
     sState = state;
+    if(sState == 'C')
+    {
+        monitorUi.stop();
+        qDebug()<<"close UI";
+    }
 
 }
 
