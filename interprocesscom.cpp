@@ -52,21 +52,22 @@ void InterProcessCom::checkRequest()
     QList<QByteArray> fields=pack.split(FIELD_DELIMITER);
     system =fields.at(0);
     ui = fields.at(1);
-    qDebug()<< ui;
+//    qDebug()<< ui;
     state = fields.at(2);
     sSystem = system;
     sUi = ui;
-    if(sUi == 'L' )
+    sState = state;
+    if(sUi == 'L' && sState == 'O')
     {
         monitorUi.start(70000);
         qDebug()<<"chuyen giao dien";
     }
 
-    sState = state;
     if(sState == 'C')
     {
         monitorUi.stop();
         qDebug()<<"close UI";
+
     }
 
 }
