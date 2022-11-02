@@ -22,8 +22,8 @@ void InterProcessCom::serverRespone()
     disconnectEvent = 0;
     socket = server->nextPendingConnection();
     socket->waitForReadyRead();
-//    qDebug()<<socket->readAll();
     buffer.append(socket->readAll());
+//    qDebug()<< buffer;
     checkRequest();
     socket->write("Server Respones : Hello Client");
 }
